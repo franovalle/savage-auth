@@ -9,11 +9,11 @@ module.exports = function(app, passport, db) {
 
     // PROFILE SECTION =========================
     app.get('/profile', isLoggedIn, function(req, res) {
-        db.collection('messages').find().toArray((err, result) => {
+        db.collection('comment').find().toArray((err, result) => {
           if (err) return console.log(err)
           res.render('profile.ejs', {
             user : req.user,
-            messages: result
+            comment: result
           })
         })
     });
@@ -28,16 +28,16 @@ module.exports = function(app, passport, db) {
 
 // message board routes ===============================================================
 
-    app.post('/messages', (req, res) => {
-      db.collection('messages').save({name: req.body.name, msg: req.body.msg, thumbUp: 0, thumbDown:0}, (err, result) => {
+    app.post('/comment', (req, res) => {
+      db.collection('comment').save({name: req.body.name, msg: req.body.msg, thumbUp: 0, thumbDown:0}, (err, result) => {
         if (err) return console.log(err)
         console.log('saved to database')
         res.redirect('/profile')
       })
     })
 
-    app.put('/messages', (req, res) => {
-      db.collection('messages')
+    app.put('/comment', (req, res) => {
+      db.collection('comment')
       .findOneAndUpdate({name: req.body.name, msg: req.body.msg}, {
         $set: {
           thumbUp:req.body.thumbUp + 1
@@ -52,8 +52,8 @@ module.exports = function(app, passport, db) {
     })
 
 //thumbs down button
-    app.put('/messagesDown', (req, res) => {
-      db.collection('messages')
+    app.put('/commentDown', (req, res) => {
+      db.collection('comment')
       .findOneAndUpdate({name: req.body.name, msg: req.body.msg}, {
         $set: {
           thumbUp:req.body.thumbUp - 1
@@ -67,8 +67,8 @@ module.exports = function(app, passport, db) {
       })
     })
 //trash bin
-    app.delete('/messages', (req, res) => {
-      db.collection('messages').findOneAndDelete({name: req.body.name, msg: req.body.msg}, (err, result) => {
+    app.delete('/comment', (req, res) => {
+      db.collection('comment').findOneAndDelete({name: req.body.name, msg: req.body.msg}, (err, result) => {
         if (err) return res.send(500, err)
         res.send('Message deleted!')
       })
